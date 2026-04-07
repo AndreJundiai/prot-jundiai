@@ -57,16 +57,16 @@
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Material Principal</label>
                         <select name="material" class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 selection:bg-blue-100 transition">
-                            <option value="Zircônia" {{ $record->material == 'Zircônia' ? 'selected' : '' }}>Zircônia</option>
-                            <option value="Metalo-Cerâmica" {{ $record->material == 'Metalo-Cerâmica' ? 'selected' : '' }}>Metalo-Cerâmica</option>
-                            <option value="E-Max" {{ $record->material == 'E-Max' ? 'selected' : '' }}>E-Max / Dissilicato</option>
-                            <option value="Resina" {{ $record->material == 'Resina' ? 'selected' : '' }}>Resina Fotopolimerizável</option>
-                            <option value="Cromo Cobalto" {{ $record->material == 'Cromo Cobalto' ? 'selected' : '' }}>Cromo Cobalto</option>
+                            <option value="Zircônia" {{ $technicalRecord->material == 'Zircônia' ? 'selected' : '' }}>Zircônia</option>
+                            <option value="Metalo-Cerâmica" {{ $technicalRecord->material == 'Metalo-Cerâmica' ? 'selected' : '' }}>Metalo-Cerâmica</option>
+                            <option value="E-Max" {{ $technicalRecord->material == 'E-Max' ? 'selected' : '' }}>E-Max / Dissilicato</option>
+                            <option value="Resina" {{ $technicalRecord->material == 'Resina' ? 'selected' : '' }}>Resina Fotopolimerizável</option>
+                            <option value="Cromo Cobalto" {{ $technicalRecord->material == 'Cromo Cobalto' ? 'selected' : '' }}>Cromo Cobalto</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Escala de Cor (VITA)</label>
-                        <input type="text" name="color" value="{{ $record->color }}" placeholder="Ex: A1, A2, B3..." class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 font-black text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        <input type="text" name="color" value="{{ $technicalRecord->color }}" placeholder="Ex: A1, A2, B3..." class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 font-black text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                     </div>
                 </div>
 
@@ -91,17 +91,17 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Tipo de Oclusão</label>
-                        <input type="text" name="occlusion" value="{{ $record->occlusion }}" placeholder="Ex: Normal, Justa..." class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        <input type="text" name="occlusion" value="{{ $technicalRecord->occlusion }}" placeholder="Ex: Normal, Justa..." class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Tipo de Acabamento</label>
-                        <input type="text" name="finish" value="{{ $record->finish }}" placeholder="Ex: Brilhante, Fosco..." class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        <input type="text" name="finish" value="{{ $technicalRecord->finish }}" placeholder="Ex: Brilhante, Fosco..." class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Observações Adicionais</label>
-                    <textarea name="notes" rows="4" class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" placeholder="Instruções específicas para o acabamento, oclusão ou estética...">{{ $record->notes }}</textarea>
+                    <textarea name="notes" rows="4" class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" placeholder="Instruções específicas para o acabamento, oclusão ou estética...">{{ $technicalRecord->notes }}</textarea>
                 </div>
             </div>
 
