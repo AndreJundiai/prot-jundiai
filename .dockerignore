@@ -1,0 +1,17 @@
+vendor/
+node_modules/
+.git/
+.env
+storage/*.key
+bootstrap/cache/*
+public/hot
+public/storage
+public/build
+npm-debug.log
+yarn-error.log
+.vscode/
+.idea/
+phpunit.result.cache
+.phpunit.cache
+database/database.sqlite
+database/database.sqlite-journal
