@@ -19,3 +19,4 @@ services:
       - key: WEB_ROOT
         value: public
     buildCommand: ./render-build.sh
+    startCommand: php artisan serve --host 0.0.0.0 --port $PORT
