@@ -59,11 +59,15 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 RUN SESSION_DRIVER=array CACHE_STORE=array QUEUE_CONNECTION=sync \
     php artisan package:discover --ansi
 
-# Run migrations and seed data
-RUN php artisan migrate --force && \
-    php artisan db:seed --class=ProtJundSeeder --force && \
-    php artisan db:seed --class=ServiceSeeder --force && \
-    php artisan key:generate
+# Run migrations
+RUN php artisan migrate --force -v
+
+# Run seeders
+RUN php artisan db:seed --class=ProtJundSeeder --force -v
+RUN php artisan db:seed --class=ServiceSeeder --force -v
+
+# Generate key
+RUN php artisan key:generate -v
 
 EXPOSE 80
 
