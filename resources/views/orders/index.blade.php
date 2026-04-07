@@ -37,40 +37,71 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-50 text-slate-400 text-[10px] uppercase tracking-widest border-b border-slate-200">
-                        <th class="px-8 py-5 font-bold">Protocolo</th>
-                        <th class="px-8 py-5 font-bold">Data de Entrega</th>
-                        <th class="px-8 py-5 font-bold">Dentista / Consultório</th>
-                        <th class="px-8 py-5 font-bold">Paciente</th>
-                        <th class="px-8 py-5 font-bold text-center">Status</th>
-                        <th class="px-8 py-5 font-bold text-right">Ações</th>
+                        <th class="px-6 py-5 font-bold">#</th>
+                        <th class="px-6 py-5 font-bold">Entrada</th>
+                        <th class="px-6 py-5 font-bold">Saída</th>
+                        <th class="px-6 py-5 font-bold">Dentista</th>
+                        <th class="px-6 py-5 font-bold">Paciente</th>
+                        <th class="px-6 py-5 font-bold">Serviço / Via</th>
+                        <th class="px-6 py-5 font-bold text-center">Status</th>
+                        <th class="px-6 py-5 font-bold text-right">Ações</th>
                     </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-slate-100">
                     @forelse($orders as $order)
-                    <tr class="hover:bg-slate-50/50 transition group items-center">
-                        <td class="px-8 py-6 whitespace-nowrap">
+                    <tr class="hover:bg-blue-50/30 transition group items-center">
+                        {{-- Protocol --}}
+                        <td class="px-6 py-4 whitespace-nowrap">
                             <span class="text-slate-400 font-mono text-xs">#{{ str_pad($order->id, 5, '0', STR_PAD_LEFT) }}</span>
                         </td>
-                        <td class="px-8 py-6 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <i class="fa-regular fa-calendar-clock mr-2 text-slate-400"></i>
-                                <span class="font-bold {{ $order->delivery_date && $order->delivery_date->isPast() && $order->status != 'Finalizado' && $order->status != 'Entregue' ? 'text-red-500' : 'text-slate-900' }}">
-                                    {{ $order->delivery_date ? $order->delivery_date->format('d/m/Y') : 'A definir' }}
-                                </span>
+                        {{-- Entrada (created_at) --}}
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center text-slate-500">
+                                <i class="fa-regular fa-calendar-plus mr-2 text-slate-300 text-xs"></i>
+                                <span class="text-xs font-medium">{{ $order->created_at->format('d/m/Y') }}</span>
                             </div>
                         </td>
-                        <td class="px-8 py-6 whitespace-nowrap">
+                        {{-- Saída / Delivery --}}
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @php
+                                $isLate = $order->delivery_date && $order->delivery_date->isPast()
+                                    && !in_array($order->status, ['Finalizado', 'Entregue']);
+                                $isToday = $order->delivery_date && $order->delivery_date->isToday();
+                            @endphp
                             <div class="flex items-center">
-                                <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mr-3 font-bold text-xs">
+                                <i class="fa-regular fa-calendar-check mr-2 text-xs {{ $isLate ? 'text-red-400' : ($isToday ? 'text-amber-400' : 'text-slate-300') }}"></i>
+                                <span class="text-xs font-bold {{ $isLate ? 'text-red-500' : ($isToday ? 'text-amber-500' : 'text-slate-700') }}">
+                                    {{ $order->delivery_date ? $order->delivery_date->format('d/m/Y') : '—' }}
+                                </span>
+                                @if($isLate)
+                                    <span class="ml-2 text-[9px] font-extrabold text-red-400 uppercase bg-red-50 px-1.5 py-0.5 rounded-md">Atraso</span>
+                                @elseif($isToday)
+                                    <span class="ml-2 text-[9px] font-extrabold text-amber-500 uppercase bg-amber-50 px-1.5 py-0.5 rounded-md">Hoje</span>
+                                @endif
+                            </div>
+                        </td>
+                        {{-- Dentista --}}
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-2 font-black text-xs shrink-0">
                                     {{ substr($order->dentist->name, 0, 1) }}
                                 </div>
-                                <span class="font-bold text-slate-900">{{ $order->dentist->name }}</span>
+                                <span class="font-bold text-slate-900 text-xs">{{ $order->dentist->name }}</span>
                             </div>
                         </td>
-                        <td class="px-8 py-6 whitespace-nowrap text-slate-600 font-medium italic">
-                            {{ $order->patient ? $order->patient->name : '-' }}
+                        {{-- Paciente --}}
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-slate-600 font-medium text-xs italic">{{ $order->patient ? $order->patient->name : '—' }}</span>
                         </td>
-                        <td class="px-8 py-6 whitespace-nowrap text-center">
+                        {{-- Serviço / Via --}}
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <p class="font-bold text-slate-800 text-xs">{{ $order->service_name ?? 'Serviço não definido' }}</p>
+                            @if($order->via ?? null)
+                                <span class="text-[10px] font-bold text-slate-400">{{ $order->via }}</span>
+                            @endif
+                        </td>
+                        {{-- Status --}}
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
                             @php
                                 $statusMap = [
                                     'Aberto' => ['class' => 'bg-slate-100 text-slate-600', 'icon' => 'fa-clock'],
@@ -81,23 +112,24 @@
                                 ];
                                 $st = $statusMap[$order->status] ?? ['class' => 'bg-slate-100 text-slate-600', 'icon' => 'fa-question'];
                             @endphp
-                            <span class="px-4 py-1.5 inline-flex items-center text-[10px] font-extrabold uppercase tracking-widest rounded-full {{ $st['class'] }}">
-                                <i class="fa-solid {{ $st['icon'] }} mr-1.5"></i>
+                            <span class="px-3 py-1.5 inline-flex items-center text-[9px] font-extrabold uppercase tracking-widest rounded-full {{ $st['class'] }}">
+                                <i class="fa-solid {{ $st['icon'] }} mr-1"></i>
                                 {{ $order->status }}
                             </span>
                         </td>
-                        <td class="px-8 py-6 whitespace-nowrap text-right">
-                            <div class="flex justify-end items-center space-x-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <a href="{{ route('orders.technical_records.edit', $order) }}" class="w-9 h-9 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center hover:bg-teal-600 hover:text-white transition shadow-sm" title="Ficha Técnica">
-                                    <i class="fa-solid fa-tooth"></i>
+                        {{-- Ações --}}
+                        <td class="px-6 py-4 whitespace-nowrap text-right">
+                            <div class="flex justify-end items-center space-x-2">
+                                <a href="{{ route('orders.technical_records.edit', $order) }}" class="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center hover:bg-teal-600 hover:text-white transition shadow-sm shrink-0" title="Ficha Técnica">
+                                    <i class="fa-solid fa-tooth text-xs"></i>
                                 </a>
-                                <a href="{{ route('orders.edit', $order) }}" class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition shadow-sm" title="Editar">
-                                    <i class="fa-solid fa-pen-to-square text-sm"></i>
+                                <a href="{{ route('orders.edit', $order) }}" class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition shadow-sm shrink-0" title="Editar">
+                                    <i class="fa-solid fa-pen-to-square text-xs"></i>
                                 </a>
-                                <form action="{{ route('orders.destroy', $order) }}" method="POST" class="inline-block" onsubmit="return confirm('Excluir pedido?');">
+                                <form action="{{ route('orders.destroy', $order) }}" method="POST" class="inline-block" onsubmit="return confirm('Excluir pedido #{{ str_pad($order->id,5,\"0\",STR_PAD_LEFT) }}?');">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="w-9 h-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition shadow-sm" title="Excluir">
-                                        <i class="fa-solid fa-trash text-sm"></i>
+                                    <button type="submit" class="w-8 h-8 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition shadow-sm" title="Excluir">
+                                        <i class="fa-solid fa-trash text-xs"></i>
                                     </button>
                                 </form>
                             </div>

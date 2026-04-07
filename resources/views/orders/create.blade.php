@@ -80,6 +80,16 @@
                         <option value="Faltando">Pendente de Material</option>
                     </select>
                 </div>
+
+                <!-- Via do Trabalho -->
+                <div>
+                    <label for="via" class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Via do Trabalho</label>
+                    <select name="via" id="via" class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 font-black text-slate-900 focus:ring-2 focus:ring-blue-500 transition">
+                        <option value="1ª via" selected>1ª Via — Trabalho Original</option>
+                        <option value="2ª via">2ª Via — Refazer</option>
+                        <option value="Ajuste">Ajuste / Conserto</option>
+                    </select>
+                </div>
                 
                 <!-- Data Entrega -->
                 <div>

@@ -37,9 +37,15 @@ class OrderController extends Controller
             'patient_id' => 'nullable|exists:patients,id',
             'status' => 'required|in:Aberto,Em Produção,Finalizado,Faltando',
             'delivery_date' => 'nullable|date',
+            'price' => 'nullable|numeric',
+            'service_name' => 'nullable|string|max:255',
+            'via' => 'nullable|string|max:50',
         ]);
 
         $order = Order::create($validated);
+
+        // Create technical record stub
+        $order->technicalRecord()->create(['order_id' => $order->id]);
 
         return redirect()->route('orders.index')->with('success', 'Pedido criado com sucesso!');
     }
