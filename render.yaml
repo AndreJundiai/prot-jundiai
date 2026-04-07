@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: protjund
+    runtime: php
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        sync: false
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: DB_DATABASE
+        value: database/database.sqlite
+      - key: LOG_CHANNEL
+        value: errorlog
+    buildCommand: ./render-build.sh
+    startCommand: php artisan serve --host 0.0.0.0 --port $PORT
