@@ -48,9 +48,13 @@ RUN mkdir -p database && \
     touch database/database.sqlite && \
     chmod 666 database/database.sqlite
 
-# Set document root to public
-RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf && \
-    sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Set document root to public and enable AllowOverride for .htaccess
+RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf \
+    /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf && \
+    sed -ri -e '/<Directory \/var\/www\/html\/public>/,/<\/Directory>/{s/AllowOverride None/AllowOverride All/}' \
+    /etc/apache2/apache2.conf || true && \
+    printf '<Directory /var/www/html/public>\n\tOptions Indexes FollowSymLinks\n\tAllowOverride All\n\tRequire all granted\n</Directory>\n' \
+    >> /etc/apache2/apache2.conf
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
