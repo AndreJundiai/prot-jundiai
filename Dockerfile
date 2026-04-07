@@ -67,7 +67,7 @@ RUN php artisan db:seed --class=ProtJundSeeder --force -v
 RUN php artisan db:seed --class=ServiceSeeder --force -v
 
 # Generate key
-RUN php artisan key:generate -v
+RUN cp .env.example .env && php artisan key:generate -v
 
 EXPOSE 80
 
