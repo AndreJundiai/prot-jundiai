@@ -28,14 +28,21 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy project files
-COPY . .
-
 # Set environment variables for non-interactive composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV COMPOSER_MEMORY_LIMIT=-1
 
-# Setup Database BEFORE composer install (to avoid discovery errors)
+# Cache composer dependencies
+COPY composer.json composer.lock* ./
+
+# Install dependencies WITHOUT the rest of the code (to ensure clean environment)
+# Using --no-scripts to avoid booting the app before the code is there
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts -vvv
+
+# Copy the rest of the application
+COPY . .
+
+# Setup Database
 RUN mkdir -p database && \
     touch database/database.sqlite && \
     chmod 666 database/database.sqlite
@@ -47,13 +54,7 @@ RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-avail
 # Permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Build process (Split to isolate failure and override drivers)
-# First install dependencies without scripts
-RUN php -m && \
-    SESSION_DRIVER=array CACHE_STORE=array QUEUE_CONNECTION=sync \
-    composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts -vvv
-
-# Then run discovery manually to see the error
+# Run discovery manually now that the code is copied
 RUN SESSION_DRIVER=array CACHE_STORE=array QUEUE_CONNECTION=sync \
     php artisan package:discover --ansi
 
