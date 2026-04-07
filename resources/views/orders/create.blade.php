@@ -49,15 +49,16 @@
                     <p class="mt-2 text-[10px] text-slate-400 italic">Dica: Cadastre o paciente antes se for um novo caso.</p>
                 </div>
 
-                <!-- Serviço / Descrição -->
+                <!-- Serviço / Seleção -->
                 <div>
-                    <label for="service_name" class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Serviço a ser realizado</label>
-                    <input type="text" name="service_name" id="service_name" list="service_list" placeholder="Ex: Coroa Zircônia Protocolo" class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 font-bold text-slate-900 focus:ring-2 focus:ring-blue-500 transition">
-                    <datalist id="service_list">
+                    <label for="service_select" class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Serviço a ser realizado</label>
+                    <select id="service_select" class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 font-bold text-slate-900 focus:ring-2 focus:ring-blue-500 transition">
+                        <option value="">Selecione o serviço...</option>
                         @foreach($services as $service)
-                            <option value="{{ $service->name }}">
+                            <option value="{{ $service->id }}">{{ $service->name }}</option>
                         @endforeach
-                    </datalist>
+                    </select>
+                    <input type="hidden" name="service_name" id="service_name">
                 </div>
 
                 <!-- Valor -->
@@ -65,8 +66,9 @@
                     <label for="price" class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Valor do Acordo (R$)</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-5 flex items-center text-slate-400 font-bold">R$</span>
-                        <input type="number" step="0.01" name="price" id="price" placeholder="0,00" class="w-full pl-12 pr-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 font-black text-slate-900 focus:ring-2 focus:ring-blue-500 transition">
+                        <input type="number" step="0.01" name="price" id="price_field" placeholder="0,00" class="w-full pl-12 pr-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 font-black text-slate-900 focus:ring-2 focus:ring-blue-500 transition">
                     </div>
+                    <p id="price_info" class="mt-2 text-[9px] text-emerald-600 font-bold uppercase tracking-widest opacity-0 transition-opacity">Preço sugerido pela tabela</p>
                 </div>
                 
                 <!-- Status Inicial -->
@@ -99,4 +101,46 @@
         </form>
     </div>
 </div>
+
+<script>
+    const serviceSelect = document.getElementById('service_select');
+    const dentistSelect = document.getElementById('dentist_id');
+    const priceField = document.getElementById('price_field');
+    const priceInfo = document.getElementById('price_info');
+    const serviceNameInput = document.getElementById('service_name');
+
+    function updatePrice() {
+        const serviceId = serviceSelect.value;
+        const dentistId = dentistSelect.value;
+        
+        if (!serviceId) {
+            priceInfo.classList.add('opacity-0');
+            serviceNameInput.value = '';
+            return;
+        }
+
+        // Set the visible name for the hidden input
+        const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+        serviceNameInput.value = selectedOption.text;
+
+        if (!dentistId) return;
+
+        // Fetch price from API
+        fetch(`/api/prices/${dentistId}/${serviceId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.price) {
+                    priceField.value = data.price;
+                    priceInfo.classList.remove('opacity-0');
+                    // Add a little highlight effect
+                    priceField.classList.add('bg-emerald-50');
+                    setTimeout(() => priceField.classList.remove('bg-emerald-50'), 500);
+                }
+            })
+            .catch(error => console.error('Erro ao buscar preço:', error));
+    }
+
+    serviceSelect.addEventListener('change', updatePrice);
+    dentistSelect.addEventListener('change', updatePrice);
+</script>
 @endsection
