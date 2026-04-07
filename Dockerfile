@@ -36,8 +36,9 @@ ENV COMPOSER_MEMORY_LIMIT=-1
 COPY composer.json composer.lock* ./
 
 # Install dependencies WITHOUT the rest of the code (to ensure clean environment)
-# Using --no-scripts to avoid booting the app before the code is there
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts -vvv
+# Using --no-scripts, --no-plugins and --ignore-platform-reqs for maximum stability during build
+RUN SESSION_DRIVER=array CACHE_STORE=array QUEUE_CONNECTION=sync \
+    composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts --no-plugins --ignore-platform-reqs -vvv
 
 # Copy the rest of the application
 COPY . .
