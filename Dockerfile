@@ -30,9 +30,17 @@ WORKDIR /var/www/html
 # Copy project files
 COPY . .
 
+# Set environment variables for non-interactive composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+# Setup Database BEFORE composer install (to avoid discovery errors)
+RUN mkdir -p database && \
+    touch database/database.sqlite && \
+    chmod 666 database/database.sqlite
+
 # Set document root to public
-RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf && \
+    sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
@@ -40,16 +48,11 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Build process
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
-# Setup Database
-RUN mkdir -p database
-RUN touch database/database.sqlite
-RUN chmod 666 database/database.sqlite
-RUN php artisan migrate --force
-RUN php artisan db:seed --class=ProtJundSeeder --force
-RUN php artisan db:seed --class=ServiceSeeder --force
-
-# Key generation (fallback if not provided)
-RUN php artisan key:generate
+# Run migrations and seed data
+RUN php artisan migrate --force && \
+    php artisan db:seed --class=ProtJundSeeder --force && \
+    php artisan db:seed --class=ServiceSeeder --force && \
+    php artisan key:generate
 
 EXPOSE 80
 
