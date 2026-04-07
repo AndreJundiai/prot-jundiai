@@ -47,11 +47,15 @@ RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-avail
 # Permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Build process (override drivers to avoid DB boot issues during discovery)
-RUN SESSION_DRIVER=array \
-    CACHE_STORE=array \
-    QUEUE_CONNECTION=sync \
-    composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader -vvv
+# Build process (Split to isolate failure and override drivers)
+# First install dependencies without scripts
+RUN php -m && \
+    SESSION_DRIVER=array CACHE_STORE=array QUEUE_CONNECTION=sync \
+    composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts -vvv
+
+# Then run discovery manually to see the error
+RUN SESSION_DRIVER=array CACHE_STORE=array QUEUE_CONNECTION=sync \
+    php artisan package:discover --ansi
 
 # Run migrations and seed data
 RUN php artisan migrate --force && \
