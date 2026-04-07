@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    protected $fillable = ['dentist_id', 'patient_id', 'status', 'delivery_date', 'price', 'service_name', 'is_invoiced'];
+    protected $fillable = ['dentist_id', 'patient_id', 'status', 'delivery_date', 'price', 'service_name', 'is_invoiced', 'via'];
 
     protected $casts = [
         'delivery_date' => 'date',

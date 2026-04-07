@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class TechnicalRecord extends Model
 {
-    protected $fillable = ['order_id', 'odontogram', 'material', 'color', 'finish', 'occlusion', 'notes'];
+    protected $fillable = ['order_id', 'teeth', 'material', 'color', 'finish', 'occlusion', 'notes'];
 
     protected $casts = [
-        'odontogram' => 'array',
+        'teeth' => 'array',
     ];
 
     public function order()

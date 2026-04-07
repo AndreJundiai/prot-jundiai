@@ -33,8 +33,13 @@ class TechnicalRecordController extends Controller
             'finish' => 'nullable|string|max:255',
             'occlusion' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
-            'odontogram' => 'nullable|array',
+            'teeth' => 'nullable|string', // JSON string from odontogram
         ]);
+
+        // Decode the teeth JSON string into array for storage
+        if (isset($validated['teeth'])) {
+            $validated['teeth'] = json_decode($validated['teeth'], true) ?? [];
+        }
 
         if ($order->technicalRecord) {
             $order->technicalRecord->update($validated);

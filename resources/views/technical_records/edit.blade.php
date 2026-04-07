@@ -70,22 +70,47 @@
                     </div>
                 </div>
 
-                <!-- Odontograma Placeholder -->
-                <div class="bg-slate-50 rounded-3xl p-8 border border-slate-100">
-                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6 flex items-center">
-                        <i class="fa-solid fa-tooth mr-2 text-blue-500"></i> Localização Dental
+                {{-- Interactive Odontogram --}}
+                <div class="bg-slate-50 rounded-3xl p-6 border border-slate-100">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-5 flex items-center">
+                        <i class="fa-solid fa-tooth mr-2 text-blue-500"></i> Odontograma — Selecione os Dentes Envolvidos
                     </h4>
-                    <div class="flex flex-wrap gap-4 justify-center">
-                        <!-- Simplified tooth selection design -->
-                        @for($i=11; $i<=18; $i++)
-                            <div class="w-10 h-14 bg-white border border-slate-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:shadow-md transition group">
-                                <span class="text-[10px] text-slate-400 group-hover:text-blue-500 font-bold">{{ $i }}</span>
-                                <div class="w-4 h-4 rounded-full bg-slate-100 group-hover:bg-blue-100 mt-2"></div>
+
+                    <input type="hidden" name="teeth" id="teeth-input" value="{{ json_encode($technicalRecord->teeth ?? []) }}">
+
+                    @php
+                        $quadrants = [
+                            ['label' => 'Superior Direito', 'teeth' => [18,17,16,15,14,13,12,11]],
+                            ['label' => 'Superior Esquerdo', 'teeth' => [21,22,23,24,25,26,27,28]],
+                            ['label' => 'Inferior Direito', 'teeth' => [41,42,43,44,45,46,47,48]],
+                            ['label' => 'Inferior Esquerdo', 'teeth' => [31,32,33,34,35,36,37,38]],
+                        ];
+                    @endphp
+
+                    <div class="grid grid-cols-2 gap-4">
+                        @foreach($quadrants as $quadrant)
+                        <div class="bg-white rounded-2xl p-4 border border-slate-100">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 text-center">{{ $quadrant['label'] }}</p>
+                            <div class="flex justify-center gap-1.5 flex-wrap">
+                                @foreach($quadrant['teeth'] as $tooth)
+                                <button type="button" onclick="toggleTooth({{ $tooth }})"
+                                    id="tooth-{{ $tooth }}"
+                                    class="tooth-btn w-9 h-11 rounded-xl border-2 border-slate-200 bg-slate-50 flex flex-col items-center justify-center cursor-pointer transition-all duration-150 active:scale-90"
+                                    title="Dente {{ $tooth }}">
+                                    <i class="fa-solid fa-tooth text-slate-300 text-xs"></i>
+                                    <span class="text-[9px] font-black text-slate-400 mt-0.5">{{ $tooth }}</span>
+                                </button>
+                                @endforeach
                             </div>
-                        @endfor
+                        </div>
+                        @endforeach
                     </div>
-                    <p class="text-center text-[10px] text-slate-400 mt-6 italic font-medium uppercase tracking-widest">Clique nos dentes envolvidos no trabalho</p>
+
+                    <p id="teeth-summary" class="text-center text-[10px] text-slate-400 mt-4 italic font-medium uppercase tracking-widest">
+                        Nenhum dente selecionado
+                    </p>
                 </div>
+
 
                 <!-- Grid: Oclusão e Acabamento -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -117,4 +142,55 @@
     </div>
 
 </div>
+
+<script>
+    let selectedTeeth = JSON.parse(document.getElementById('teeth-input').value || '[]');
+
+    function toggleTooth(num) {
+        const btn = document.getElementById('tooth-' + num);
+        const idx = selectedTeeth.indexOf(num);
+        if (idx > -1) {
+            selectedTeeth.splice(idx, 1);
+            btn.classList.remove('border-blue-500', 'bg-blue-50', 'shadow-md', 'shadow-blue-200');
+            btn.classList.add('border-slate-200', 'bg-slate-50');
+            btn.querySelector('i').classList.replace('text-blue-500', 'text-slate-300');
+            btn.querySelector('span').classList.replace('text-blue-600', 'text-slate-400');
+        } else {
+            selectedTeeth.push(num);
+            btn.classList.add('border-blue-500', 'bg-blue-50', 'shadow-md', 'shadow-blue-200');
+            btn.classList.remove('border-slate-200', 'bg-slate-50');
+            btn.querySelector('i').classList.replace('text-slate-300', 'text-blue-500');
+            btn.querySelector('span').classList.replace('text-slate-400', 'text-blue-600');
+        }
+        document.getElementById('teeth-input').value = JSON.stringify(selectedTeeth);
+        const summary = document.getElementById('teeth-summary');
+        summary.textContent = selectedTeeth.length
+            ? 'Dentes selecionados: ' + [...selectedTeeth].sort((a,b)=>a-b).join(', ')
+            : 'Nenhum dente selecionado';
+    }
+
+    // Init on load: highlight pre-selected teeth
+    document.addEventListener('DOMContentLoaded', () => {
+        selectedTeeth.forEach(t => {
+            const btn = document.getElementById('tooth-' + t);
+            if (btn) toggleTooth(t); // this adds once, so we need to pre-add then call
+        });
+        // Re-sync state since toggleTooth above adds then removes
+        selectedTeeth = JSON.parse(document.getElementById('teeth-input').value || '[]');
+        selectedTeeth.forEach(t => {
+            const btn = document.getElementById('tooth-' + t);
+            if (!btn) return;
+            btn.classList.add('border-blue-500', 'bg-blue-50', 'shadow-md', 'shadow-blue-200');
+            btn.classList.remove('border-slate-200', 'bg-slate-50');
+            btn.querySelector('i').classList.remove('text-slate-300');
+            btn.querySelector('i').classList.add('text-blue-500');
+            btn.querySelector('span').classList.remove('text-slate-400');
+            btn.querySelector('span').classList.add('text-blue-600');
+        });
+        const summary = document.getElementById('teeth-summary');
+        summary.textContent = selectedTeeth.length
+            ? 'Dentes selecionados: ' + [...selectedTeeth].sort((a,b)=>a-b).join(', ')
+            : 'Nenhum dente selecionado';
+    });
+</script>
 @endsection
