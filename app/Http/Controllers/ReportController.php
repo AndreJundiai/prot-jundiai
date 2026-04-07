@@ -16,9 +16,25 @@ class ReportController extends Controller
             'total_orders' => Order::count(),
             'finished_orders' => Order::where('status', 'Finalizado')->count(),
             'active_dentists' => Dentist::count(),
-            'total_revenue' => \App\Models\FinancialRecord::where('type', 'debit')->sum('amount'), // debits represent services sold
+            'total_revenue' => \App\Models\FinancialRecord::where('type', 'debit')->sum('amount'),
         ];
         
         return view('reports.index', compact('dentists', 'stats'));
+    }
+
+    public function production()
+    {
+        $orders = Order::with(['dentist', 'patient'])
+            ->whereIn('status', ['Em Produção', 'Atrasado'])
+            ->orderBy('delivery_date', 'asc')
+            ->get();
+            
+        return view('reports.production', compact('orders'));
+    }
+
+    public function dentists()
+    {
+        $dentists = Dentist::orderBy('name')->get();
+        return view('reports.dentists', compact('dentists'));
     }
 }

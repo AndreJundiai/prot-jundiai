@@ -54,7 +54,8 @@ class OrderController extends Controller
     {
         $dentists = Dentist::orderBy('name')->get();
         $patients = Patient::orderBy('name')->get();
-        return view('orders.edit', compact('order', 'dentists', 'patients'));
+        $services = \App\Models\Service::orderBy('name')->get();
+        return view('orders.edit', compact('order', 'dentists', 'patients', 'services'));
     }
 
     public function update(Request $request, Order $order)
@@ -93,5 +94,11 @@ class OrderController extends Controller
     {
         $order->delete();
         return redirect()->route('orders.index')->with('success', 'Pedido excluído com sucesso!');
+    }
+
+    public function os(Order $order)
+    {
+        $order->load(['dentist', 'patient', 'technicalRecord']);
+        return view('orders.os', compact('order'));
     }
 }

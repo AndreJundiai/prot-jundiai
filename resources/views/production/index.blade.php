@@ -3,8 +3,13 @@
 @section('header', 'Controle de Produção')
 
 @section('content')
-<div class="mb-6">
-    <p class="text-gray-500">Acompanhamento dos pedidos em andamento no laboratório.</p>
+<div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+        <p class="text-slate-500 font-medium">Acompanhamento dos pedidos em andamento no laboratório.</p>
+    </div>
+    <a href="{{ route('reports.production') }}" class="px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-50 transition flex items-center shadow-sm">
+        <i class="fa-solid fa-print mr-2 text-blue-500"></i> Imprimir Lista de Trabalho
+    </a>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">

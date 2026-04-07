@@ -7,24 +7,12 @@ use Illuminate\Http\Request;
 
 class DentistController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $query = Dentist::query();
-        
-        if ($request->has('search')) {
-            $search = $request->get('search');
-            $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('cro', 'like', "%{$search}%");
-        }
-
-        $dentists = $query->orderBy('name')->paginate(10);
-        
-        return view('dentists.index', compact('dentists'));
-    }
-
-    public function create()
-    {
-        // Simple implementation without a separate create page for now, using a modal later or just a form
+        $dentists = Dentist::with('prices')->orderBy('name')->get();
+        // Load all services to show in the price management modal/section
+        $services = \App\Models\Service::orderBy('name')->get();
+        return view('dentists.index', compact('dentists', 'services'));
     }
 
     public function store(Request $request)
@@ -39,11 +27,6 @@ class DentistController extends Controller
         Dentist::create($validated);
 
         return redirect()->route('dentists.index')->with('success', 'Dentista cadastrado com sucesso!');
-    }
-
-    public function edit(Dentist $dentist)
-    {
-        //
     }
 
     public function update(Request $request, Dentist $dentist)
@@ -64,5 +47,32 @@ class DentistController extends Controller
     {
         $dentist->delete();
         return redirect()->route('dentists.index')->with('success', 'Dentista removido com sucesso!');
+    }
+
+    public function updatePrices(Request $request, Dentist $dentist)
+    {
+        $prices = $request->input('prices', []);
+        
+        foreach ($prices as $serviceId => $price) {
+            if ($price !== null && $price !== '') {
+                \App\Models\DentistPrice::updateOrCreate(
+                    ['dentist_id' => $dentist->id, 'service_id' => $serviceId],
+                    ['price' => str_replace(',', '.', $price)]
+                );
+            }
+        }
+        
+        return back()->with('success', 'Tabela de preços atualizada!');
+    }
+
+    public function getPrice(Dentist $dentist, \App\Models\Service $service)
+    {
+        $customPrice = \App\Models\DentistPrice::where('dentist_id', $dentist->id)
+            ->where('service_id', $service->id)
+            ->first();
+            
+        return response()->json([
+            'price' => $customPrice ? $customPrice->price : $service->base_price
+        ]);
     }
 }

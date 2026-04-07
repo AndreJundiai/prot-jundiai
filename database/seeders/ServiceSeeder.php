@@ -10,18 +10,17 @@ class ServiceSeeder extends Seeder
     public function run(): void
     {
         $services = [
-            ['category' => 'Prótese Total', 'name' => 'Prótese Total (Dentadura) Superior', 'base_price' => 450.00],
-            ['category' => 'Prótese Total', 'name' => 'Prótese Total (Dentadura) Inferior', 'base_price' => 450.00],
-            ['category' => 'Prótese Fixa', 'name' => 'Coroa em Zircônia', 'base_price' => 550.00],
-            ['category' => 'Prótese Fixa', 'name' => 'Coroa Metalo-Cerâmica', 'base_price' => 380.00],
-            ['category' => 'Prótese Flexível', 'name' => 'Partial Flex (Roach)', 'base_price' => 320.00],
-            ['category' => 'Diversos', 'name' => 'Armação Metálica', 'base_price' => 200.00],
-            ['category' => 'Diversos', 'name' => 'Pilar Personalizado', 'base_price' => 150.00],
-            ['category' => 'Protocolo', 'name' => 'Protocolo Superior em Resina', 'base_price' => 1200.00],
+            ['name' => 'Armação Metálica', 'category' => 'Prótese Parcial', 'base_price' => 300.00],
+            ['name' => 'Prótese Total (Dentadura)', 'category' => 'Prótese Total', 'base_price' => 450.00],
+            ['name' => 'RMF (Ponte Móvel)', 'category' => 'Prótese Parcial', 'base_price' => 350.00],
+            ['name' => 'Coroa Zircônia', 'category' => 'Prótese Fixa', 'base_price' => 600.00],
+            ['name' => 'Coroa Metalocid', 'category' => 'Prótese Fixa', 'base_price' => 250.00],
+            ['name' => 'Placa de Bruxismo', 'category' => 'Diversos', 'base_price' => 120.00],
+            ['name' => 'Conserto Prótese', 'category' => 'Manutenção', 'base_price' => 80.00],
         ];
 
-        foreach ($services as $s) {
-            Service::create($s);
+        foreach ($services as $service) {
+            Service::updateOrCreate(['name' => $service['name']], $service);
         }
     }
 }
