@@ -8,7 +8,7 @@ return [
          * The name of this application. You can use this name to monitor
          * the backups.
          */
-        'name' => env('APP_NAME', 'barbearia-sistema'),
+        'name' => env('APP_NAME', 'protjund-sistema'),
 
         'source' => [
 
@@ -78,7 +78,7 @@ return [
              * The disks on which the backups will be stored. Default is 's3'.
              */
             'disks' => [
-                's3',
+                'local',
             ],
         ],
 
@@ -133,8 +133,8 @@ return [
 
     'monitor_backups' => [
         [
-            'name' => env('APP_NAME', 'barbearia-sistema'),
-            'disks' => ['s3'],
+            'name' => env('APP_NAME', 'protjund-sistema'),
+            'disks' => ['local'],
             'health_checks' => [
                 \Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumAgeInDays::class => 1,
                 \Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumStorageInMegabytes::class => 5000,

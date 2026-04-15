@@ -82,6 +82,13 @@
                 <p class="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sistema</p>
             </div>
 
+            @can('manage-admins')
+            <a href="{{ route('users.index') }}" class="flex items-center space-x-3 py-3 px-4 rounded-xl transition-all duration-200 group {{ request()->is('users*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                <i class="fa-solid fa-users-gear w-5 text-lg"></i>
+                <span class="font-medium">Gerenciar Usuários</span>
+            </a>
+            @endcan
+
             <a href="/settings" class="flex items-center space-x-3 py-3 px-4 rounded-xl transition-all duration-200 group {{ request()->is('settings*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
                 <i class="fa-solid fa-gear w-5 text-lg"></i>
                 <span class="font-medium">Configurações</span>
@@ -93,9 +100,14 @@
                 <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-sm font-bold shadow-lg shadow-blue-900/20 mr-3">
                     <i class="fa-solid fa-user-tie"></i>
                 </div>
-                <div class="overflow-hidden">
-                    <p class="text-xs font-bold text-white truncate">Admin ProtJund</p>
-                    <p class="text-[10px] text-slate-500 truncate">Sair do Sistema</p>
+                <div class="overflow-hidden flex-1">
+                    <p class="text-xs font-bold text-white truncate">{{ auth()->user()->name }}</p>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="text-[10px] text-slate-500 hover:text-red-400 transition-colors uppercase font-bold tracking-tighter">
+                            Sair do Sistema
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

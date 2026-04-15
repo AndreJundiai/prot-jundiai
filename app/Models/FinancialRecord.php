@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class FinancialRecord extends Model
 {
-    protected $fillable = ['dentist_id', 'amount', 'type', 'description', 'patient_name', 'transaction_date'];
+    protected $fillable = ['dentist_id', 'order_id', 'amount', 'type', 'description', 'patient_name', 'transaction_date'];
 
     protected $casts = [
         'transaction_date' => 'date',
@@ -16,5 +16,10 @@ class FinancialRecord extends Model
     public function dentist()
     {
         return $this->belongsTo(Dentist::class);
+    }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
     }
 }

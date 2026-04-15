@@ -45,6 +45,7 @@ class DentistController extends Controller
 
     public function destroy(Dentist $dentist)
     {
+        \Illuminate\Support\Facades\Gate::authorize('manage-data');
         $dentist->delete();
         return redirect()->route('dentists.index')->with('success', 'Dentista removido com sucesso!');
     }

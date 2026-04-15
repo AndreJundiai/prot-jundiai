@@ -126,7 +126,7 @@
                                 <a href="{{ route('orders.edit', $order) }}" class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition shadow-sm shrink-0" title="Editar">
                                     <i class="fa-solid fa-pen-to-square text-xs"></i>
                                 </a>
-                                <form action="{{ route('orders.destroy', $order) }}" method="POST" class="inline-block" onsubmit="return confirm('Excluir pedido #{{ str_pad($order->id,5,\"0\",STR_PAD_LEFT) }}?');">
+                                <form action="{{ route('orders.destroy', $order) }}" method="POST" class="inline-block" onsubmit="return confirm('Excluir pedido #{{ str_pad($order->id, 5, '0', STR_PAD_LEFT) }}?');">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="w-8 h-8 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition shadow-sm" title="Excluir">
                                         <i class="fa-solid fa-trash text-xs"></i>
@@ -137,7 +137,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-8 py-20 text-center">
+                        <td colspan="8" class="px-8 py-20 text-center">
                             <div class="flex flex-col items-center">
                                 <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
                                     <i class="fa-solid fa-boxes-stacked text-3xl text-slate-200"></i>

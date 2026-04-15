@@ -10,12 +10,15 @@ class UserController extends Controller
 {
     public function index()
     {
+        \Illuminate\Support\Facades\Gate::authorize('manage-admins');
+        
         $users = User::all();
         return view('users.index', compact('users'));
     }
 
     public function store(Request $request)
     {
+        \Illuminate\Support\Facades\Gate::authorize('manage-admins');
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -35,6 +38,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        \Illuminate\Support\Facades\Gate::authorize('manage-admins');
         if ($user->id === auth()->id()) {
             return redirect()->back()->withErrors(['error' => 'Você não pode excluir a si mesmo.']);
         }

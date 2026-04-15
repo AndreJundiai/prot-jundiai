@@ -73,6 +73,7 @@ class OrderController extends Controller
             'delivery_date' => 'nullable|date',
             'price' => 'nullable|numeric',
             'service_name' => 'nullable|string|max:255',
+            'via' => 'nullable|string|max:50',
         ]);
 
         $oldStatus = $order->status;
@@ -98,6 +99,7 @@ class OrderController extends Controller
 
     public function destroy(Order $order)
     {
+        \Illuminate\Support\Facades\Gate::authorize('manage-data');
         $order->delete();
         return redirect()->route('orders.index')->with('success', 'Pedido excluído com sucesso!');
     }

@@ -89,6 +89,15 @@
                     </div>
 
                     <div>
+                        <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-3">Via do Trabalho</label>
+                        <select name="via" id="via" class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 font-black text-slate-900 focus:ring-2 focus:ring-blue-500 transition">
+                            <option value="1ª via" {{ $order->via == '1ª via' || !$order->via ? 'selected' : '' }}>1ª Via — Trabalho Original</option>
+                            <option value="2ª via" {{ $order->via == '2ª via' ? 'selected' : '' }}>2ª Via — Refazer</option>
+                            <option value="Ajuste" {{ $order->via == 'Ajuste' ? 'selected' : '' }}>Ajuste / Conserto</option>
+                        </select>
+                    </div>
+
+                    <div>
                         <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-3">Data de Entrega</label>
                         <input type="date" name="delivery_date" value="{{ $order->delivery_date ? $order->delivery_date->format('Y-m-d') : '' }}" class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition">
                     </div>

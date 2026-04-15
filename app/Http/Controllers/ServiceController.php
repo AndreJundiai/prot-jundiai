@@ -41,6 +41,7 @@ class ServiceController extends Controller
 
     public function destroy(Service $service)
     {
+        \Illuminate\Support\Facades\Gate::authorize('manage-data');
         $service->delete();
         return redirect()->route('products.index')->with('success', 'Serviço removido!');
     }

@@ -60,16 +60,69 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 space-y-6">
-            <h3 class="text-lg font-bold text-slate-900 flex items-center">
-                <i class="fa-solid fa-shield-halved text-blue-500 mr-3"></i> Segurança
-            </h3>
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 space-y-6 flex flex-col">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center">
+                    <i class="fa-solid fa-shield-halved text-blue-500 mr-3"></i> Proteção e Backup
+                </h3>
+                <form action="{{ route('backup.run') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-md shadow-blue-900/20 hover:bg-blue-700 transition">
+                        Gerar Agora
+                    </button>
+                </form>
+            </div>
+            
+            @if(session('status'))
+                <div class="bg-emerald-50 text-emerald-600 px-4 py-3 rounded-xl text-sm font-bold border border-emerald-100">
+                    {{ session('status') }}
+                </div>
+            @endif
+            @if($errors->any())
+                <div class="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm font-bold border border-red-100">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
             <div class="space-y-4">
                 <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium text-slate-700">Backup Automático</span>
-                    <span class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded">Ativado</span>
+                    <span class="text-sm font-medium text-slate-700">Rotina Automática</span>
+                    <span class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded uppercase tracking-wider">Ativa (Diária)</span>
                 </div>
-                <div class="flex items-center justify-between">
+                
+                @if(isset($backups) && count($backups) > 0)
+                    <div class="pt-4 border-t border-slate-100">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Arquivos Prontos para Download</span>
+                        <ul class="space-y-2 max-h-40 overflow-y-auto custom-scrollbar pr-2">
+                            @foreach($backups as $backup)
+                            <li class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                <div>
+                                    <p class="text-xs font-bold text-slate-700">{{ date('d/m/Y H:i', $backup['last_modified']) }}</p>
+                                    <p class="text-[10px] text-slate-400">{{ round($backup['file_size'] / 1024, 2) }} KB</p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <a href="{{ route('backup.download', $backup['file_name']) }}" class="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-blue-600 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition" title="Baixar Backup">
+                                        <i class="fa-solid fa-download"></i>
+                                    </a>
+                                    <form action="{{ route('backup.destroy', $backup['file_name']) }}" method="POST" onsubmit="return confirm('Deseja realmente apagar este backup?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-red-500 rounded-lg hover:border-red-500 hover:bg-red-50 transition" title="Excluir Backup">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @else
+                    <div class="pt-4 border-t border-slate-100">
+                        <p class="text-xs text-slate-400 font-bold italic text-center py-2">Nenhum backup gerado ainda. Clique em "Gerar Agora".</p>
+                    </div>
+                @endif
+                
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
                     <span class="text-sm font-medium text-slate-700">Último Acesso</span>
                     <span class="text-xs text-slate-400">{{ date('d/m/Y H:i') }}</span>
                 </div>

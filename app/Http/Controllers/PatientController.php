@@ -58,6 +58,7 @@ class PatientController extends Controller
 
     public function destroy(Patient $patient)
     {
+        \Illuminate\Support\Facades\Gate::authorize('manage-data');
         $patient->delete();
         return redirect()->route('patients.index')->with('success', 'Paciente removido com sucesso!');
     }
