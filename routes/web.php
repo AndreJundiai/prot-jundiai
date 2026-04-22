@@ -48,15 +48,16 @@ Route::middleware('auth')->group(function () {
     Route::resource('products', ServiceController::class)->except(['create', 'show', 'edit']);
     Route::resource('users', UserController::class)->only(['index', 'store', 'destroy']);
 
-    // ROTA TEMPORÁRIA PARA MIGRATION (EXCLUIR APÓS O USO)
-    Route::get('/run-migrations', function () {
-        try {
-            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-            return "Migrações executadas com sucesso!<br><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
-        } catch (\Exception $e) {
-            return "Erro ao executar migrações: " . $e->getMessage();
-        }
-    });
+});
+
+// ROTA TEMPORÁRIA PARA MIGRATION (EXCLUIR APÓS O USO)
+Route::get('/run-migrations', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return "Migrações executadas com sucesso!<br><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+    } catch (\Exception $e) {
+        return "Erro ao executar migrações: " . $e->getMessage();
+    }
 });
 
 require __DIR__.'/auth.php';
