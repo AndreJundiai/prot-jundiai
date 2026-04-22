@@ -71,8 +71,9 @@
                     <th class="px-8 py-5">Protocolo</th>
                     <th class="px-8 py-5">Entrega</th>
                     <th class="px-8 py-5">Dentista</th>
-                    <th class="px-8 py-5">Paciente</th>
+                    <th class="px-8 py-5 font-medium">Paciente</th>
                     <th class="px-8 py-5 text-center">Status</th>
+                    <th class="px-8 py-5 text-right">Ações</th>
                 </tr>
             </thead>
             <tbody class="text-sm divide-y divide-slate-50">
@@ -96,6 +97,11 @@
                         <span class="px-4 py-1.5 inline-flex text-[10px] font-black uppercase tracking-widest rounded-full {{ $stClass }}">
                             {{ $order->status }}
                         </span>
+                    </td>
+                    <td class="px-8 py-6 whitespace-nowrap text-right">
+                        <a href="{{ route('orders.os', $order) }}" class="inline-flex w-8 h-8 rounded-xl bg-slate-900 text-white items-center justify-center hover:bg-black transition shadow-sm" title="Extrato Individual (OS)">
+                            <i class="fa-solid fa-file-lines text-xs"></i>
+                        </a>
                     </td>
                 </tr>
                 @empty

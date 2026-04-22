@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Dentist;
 use App\Models\Patient;
+use App\Models\FinancialRecord;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -107,6 +108,26 @@ class OrderController extends Controller
     public function os(Order $order)
     {
         $order->load(['dentist', 'patient', 'technicalRecord']);
-        return view('orders.os', compact('order'));
+        
+        // Calculate balance for the dentist
+        $transactions = \App\Models\FinancialRecord::where('dentist_id', $order->dentist_id)
+            ->orderBy('transaction_date', 'asc')
+            ->get();
+            
+        $totalCredits = $transactions->where('type', 'credit')->sum('amount');
+        $totalDebits = $transactions->where('type', 'debit')->sum('amount');
+        $currentBalance = $totalDebits - $totalCredits;
+        // Previous balance (balance before this order was invoiced)
+        // If this order is not yet invoiced, the current balance IS the previous balance
+        // If it is invoiced, we subtract its price from the current total debits to get previous
+        $previousBalance = $order->is_invoiced ? ($currentBalance - $order->price) : $currentBalance;
+        
+        // Last payment
+        $lastPayment = \App\Models\FinancialRecord::where('dentist_id', $order->dentist_id)
+            ->where('type', 'credit')
+            ->orderBy('transaction_date', 'desc')
+            ->first();
+
+        return view('orders.os', compact('order', 'previousBalance', 'currentBalance', 'lastPayment'));
     }
 }

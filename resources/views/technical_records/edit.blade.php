@@ -112,6 +112,51 @@
                 </div>
 
 
+                <!-- Grid: Escala, Antagonista, Modelo -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Escala</label>
+                        <input type="text" name="escala" value="{{ $technicalRecord->escala }}" placeholder="Ex: Vida 3D..." class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Antagonista</label>
+                        <input type="text" name="antagonista" value="{{ $technicalRecord->antagonista }}" placeholder="Ex: Gesso, Silicona..." class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Modelo</label>
+                        <input type="text" name="modelo" value="{{ $technicalRecord->modelo }}" placeholder="Ex: Troquelado..." class="w-full px-5 py-4 border border-slate-200 rounded-2xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
+                </div>
+
+                <!-- Grid: Materiais Fornecidos e Devolvidos -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Detalhamento de Materiais -->
+                <div class="col-span-2">
+                    <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Materiais (Checklist para O.S.)</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                        @php
+                            $materialOptions = ['Provisório', 'Molde', 'Articulador', 'Transfer', 'Análogo', 'Gesso', 'Coping', 'Parafuso', 'Chave', 'Escaneamento', 'Pino', 'Coroa'];
+                            $currentMaterialsf = strtolower($order->technicalRecord->material_fornecido);
+                        @endphp
+                        @foreach($materialOptions as $opt)
+                            <label class="flex items-center space-x-2 bg-slate-50 p-2 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-100 transition">
+                                <input type="checkbox" name="material_list[]" value="{{ $opt }}" 
+                                    {{ str_contains($currentMaterialsf, strtolower($opt)) ? 'checked' : '' }}
+                                    class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                <span class="text-[10px] font-bold text-slate-700 uppercase">{{ $opt }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label for="material_fornecido" class="block text-xs font-black text-slate-700 uppercase tracking-widest mb-1">Observações de Materiais</label>
+                        <input type="text" name="material_fornecido" id="material_fornecido" value="{{ $order->technicalRecord->material_fornecido }}" 
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                               placeholder="Ex: Outros materiais não listados acima...">
+                    </div>
+                </div>
+                </div>
+
                 <!-- Grid: Oclusão e Acabamento -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>

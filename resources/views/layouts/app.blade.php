@@ -135,10 +135,92 @@
                 
                 <div class="h-8 w-px bg-slate-200"></div>
                 
-                <button class="relative text-slate-400 hover:text-slate-600 transition-colors">
-                    <i class="fa-regular fa-bell text-xl"></i>
-                    <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-[10px] font-bold text-white flex items-center justify-center rounded-full border-2 border-white">3</span>
-                </button>
+                @php
+                    $pendingStatuses = ['Aberto', 'Em Produção', 'Faltando'];
+                    $lateOrders = \App\Models\Order::whereIn('status', $pendingStatuses)
+                        ->where('delivery_date', '<', now()->startOfDay())
+                        ->with(['dentist', 'patient'])
+                        ->get();
+                    
+                    $todayOrders = \App\Models\Order::whereIn('status', $pendingStatuses)
+                        ->whereDate('delivery_date', now())
+                        ->with(['dentist', 'patient'])
+                        ->get();
+                    
+                    $totalAlerts = $lateOrders->count() + $todayOrders->count();
+                @endphp
+
+                <div class="relative">
+                    <button id="notificationBtn" class="relative text-slate-400 hover:text-slate-600 transition-colors">
+                        <i class="fa-regular fa-bell text-xl"></i>
+                        @if($totalAlerts > 0)
+                            <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-[10px] font-bold text-white flex items-center justify-center rounded-full border-2 border-white">
+                                {{ $totalAlerts }}
+                            </span>
+                        @endif
+                    </button>
+
+                    <!-- Notification Dropdown -->
+                    <div id="notificationDropdown" class="hidden absolute right-0 mt-4 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50">
+                        <div class="p-4 border-b border-slate-50 bg-slate-50/50 flex justify-between items-center">
+                            <h3 class="text-xs font-black text-slate-900 uppercase tracking-widest text-center w-full">Central de Alertas</h3>
+                        </div>
+                        <div class="max-h-96 overflow-y-auto custom-scrollbar">
+                            @if($lateOrders->count() > 0)
+                                <div class="p-2 bg-red-50/50">
+                                    <p class="text-[9px] font-black text-red-500 uppercase tracking-widest px-3 py-2">Pedidos em Atraso ({{ $lateOrders->count() }})</p>
+                                    @foreach($lateOrders as $order)
+                                        <a href="{{ route('orders.edit', $order) }}" class="block p-3 hover:bg-white rounded-xl transition mb-1 border border-transparent hover:border-red-100">
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-[11px] font-bold text-slate-900">#{{ str_pad($order->id, 5, '0', STR_PAD_LEFT) }} - {{ $order->patient->name }}</span>
+                                                <span class="text-[9px] font-black bg-red-100 text-red-600 px-1.5 rounded">ATRASADO</span>
+                                            </div>
+                                            <p class="text-[10px] text-slate-500 mt-1 line-clamp-1 italic">{{ $order->dentist->name }}</p>
+                                        </a>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            @if($todayOrders->count() > 0)
+                                <div class="p-2 border-t border-slate-50">
+                                    <p class="text-[9px] font-black text-amber-500 uppercase tracking-widest px-3 py-2">Entregas para Hoje ({{ $todayOrders->count() }})</p>
+                                    @foreach($todayOrders as $order)
+                                        <a href="{{ route('orders.edit', $order) }}" class="block p-3 hover:bg-slate-50 rounded-xl transition mb-1">
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-[11px] font-bold text-slate-900">#{{ str_pad($order->id, 5, '0', STR_PAD_LEFT) }} - {{ $order->patient->name }}</span>
+                                                <span class="text-[9px] font-black bg-amber-100 text-amber-600 px-1.5 rounded">HOJE</span>
+                                            </div>
+                                            <p class="text-[10px] text-slate-500 mt-1 line-clamp-1 italic">{{ $order->dentist->name }}</p>
+                                        </a>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            @if($totalAlerts == 0)
+                                <div class="p-10 text-center opacity-30">
+                                    <i class="fa-solid fa-bell-slash text-4xl mb-3"></i>
+                                    <p class="text-xs font-bold uppercase">Nenhum alerta</p>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="p-4 bg-slate-50 border-t border-slate-100">
+                            <a href="{{ route('orders.index') }}" class="block text-center text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline">Ver Todos os Pedidos</a>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    document.getElementById('notificationBtn').addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        document.getElementById('notificationDropdown').classList.toggle('hidden');
+                    });
+                    
+                    document.addEventListener('click', function(p) {
+                        if (!document.getElementById('notificationDropdown').contains(p.target)) {
+                            document.getElementById('notificationDropdown').classList.add('hidden');
+                        }
+                    });
+                </script>
             </div>
         </header>
 

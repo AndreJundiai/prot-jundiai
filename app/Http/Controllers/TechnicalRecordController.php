@@ -30,6 +30,11 @@ class TechnicalRecordController extends Controller
         $validated = $request->validate([
             'material' => 'nullable|string|max:255',
             'color' => 'nullable|string|max:255',
+            'escala' => 'nullable|string|max:255',
+            'antagonista' => 'nullable|string|max:255',
+            'modelo' => 'nullable|string|max:255',
+            'material_fornecido' => 'nullable|string|max:255',
+            'material_devolvido' => 'nullable|string|max:255',
             'finish' => 'nullable|string|max:255',
             'occlusion' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
@@ -39,6 +44,14 @@ class TechnicalRecordController extends Controller
         // Decode the teeth JSON string into array for storage
         if (isset($validated['teeth'])) {
             $validated['teeth'] = json_decode($validated['teeth'], true) ?? [];
+        }
+
+        // Merge material list checkboxes into material_fornecido
+        $materialList = $request->input('material_list', []);
+        if (!empty($materialList)) {
+            $existing = $validated['material_fornecido'] ?? '';
+            $listString = implode(', ', $materialList);
+            $validated['material_fornecido'] = $existing ? ($listString . ', ' . $existing) : $listString;
         }
 
         if ($order->technicalRecord) {

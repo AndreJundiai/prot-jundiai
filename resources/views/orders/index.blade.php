@@ -120,6 +120,9 @@
                         {{-- Ações --}}
                         <td class="px-6 py-4 whitespace-nowrap text-right">
                             <div class="flex justify-end items-center space-x-2">
+                                <a href="{{ route('orders.os', $order) }}" class="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center hover:bg-black transition shadow-sm shrink-0" title="Extrato Individual (OS)">
+                                    <i class="fa-solid fa-file-lines text-xs"></i>
+                                </a>
                                 <a href="{{ route('orders.technical_records.edit', $order) }}" class="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center hover:bg-teal-600 hover:text-white transition shadow-sm shrink-0" title="Ficha Técnica">
                                     <i class="fa-solid fa-tooth text-xs"></i>
                                 </a>

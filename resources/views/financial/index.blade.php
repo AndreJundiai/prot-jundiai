@@ -32,15 +32,21 @@
                 <span class="text-lg font-bold text-slate-400">R$</span>
                 <span class="text-4xl font-black tracking-tight">{{ number_format($balance, 2, ',', '.') }}</span>
             </div>
-            <p class="text-[10px] font-bold mt-4 uppercase tracking-widest {{ $balance > 0 ? 'text-red-400' : 'text-emerald-400' }} relative z-10">
-                <i class="fa-solid {{ $balance > 0 ? 'fa-triangle-exclamation' : 'fa-circle-check' }} mr-1"></i>
-                {{ $balance > 0 ? 'Aguardando Pagamento' : 'Saldo Regularizado' }}
-            </p>
-            <div class="mt-8 pt-8 border-t border-slate-800 relative z-10">
-                <a href="{{ route('financial.extrato', $selectedDentist->id) }}" target="_blank" class="w-full inline-flex items-center justify-center py-3.5 px-6 rounded-2xl bg-white text-slate-900 font-black text-xs uppercase tracking-widest hover:bg-blue-50 transition shadow-lg shadow-blue-900/40">
+            
+            <!-- Filtro de Período -->
+            <form action="{{ route('financial.extrato', $selectedDentist->id) }}" method="GET" target="_blank" class="mt-8 pt-8 border-t border-slate-800 relative z-10 space-y-4">
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Filtrar Período</label>
+                    <div class="grid grid-cols-2 gap-3 text-slate-900">
+                        <input type="date" name="from" value="{{ date('Y-m-01') }}" class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-800 text-white text-[10px] focus:outline-none focus:ring-1 focus:ring-blue-500">
+                        <input type="date" name="to" value="{{ date('Y-m-d') }}" class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-800 text-white text-[10px] focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full inline-flex items-center justify-center py-3.5 px-6 rounded-2xl bg-white text-slate-900 font-black text-xs uppercase tracking-widest hover:bg-blue-50 transition shadow-lg shadow-blue-900/40">
                     <i class="fa-solid fa-file-invoice mr-2"></i> Gerar Extrato
-                </a>
-            </div>
+                </button>
+            </form>
         </div>
         @endif
         
