@@ -15,9 +15,8 @@ touch database/database.sqlite
 echo "--- Running Migrations ---"
 php artisan migrate --force
 
-# Seed demo data
-echo "--- Seeding Demo Data ---"
-php artisan db:seed --class=ProtJundSeeder --force
-php artisan db:seed --class=ServiceSeeder --force
+# Seed data
+echo "--- Seeding Data ---"
+php artisan db:seed --force
 
 echo "--- Build Finished ---"

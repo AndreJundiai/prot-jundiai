@@ -56,8 +56,7 @@ RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-avail
     printf '<Directory /var/www/html/public>\n\tOptions Indexes FollowSymLinks\n\tAllowOverride All\n\tRequire all granted\n</Directory>\n' \
     >> /etc/apache2/apache2.conf
 
-# Permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Permissions will be set at the end
 
 # Run discovery manually now that the code is copied
 RUN SESSION_DRIVER=array CACHE_STORE=array QUEUE_CONNECTION=sync \
@@ -67,12 +66,18 @@ RUN SESSION_DRIVER=array CACHE_STORE=array QUEUE_CONNECTION=sync \
 RUN php artisan migrate --force -v
 
 # Run seeders
-RUN php artisan db:seed --class=ProtJundSeeder --force -v
-RUN php artisan db:seed --class=ServiceSeeder --force -v
+RUN php artisan db:seed --force -v
 
 # Generate key
 RUN cp .env.example .env && php artisan key:generate -v
 
+# Fix permissions for all files created during build
+RUN chown -R www-data:www-data /var/www/html
+
+# Copy start script
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
+
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+CMD ["/usr/local/bin/start.sh"]

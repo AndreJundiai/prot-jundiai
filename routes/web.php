@@ -54,7 +54,15 @@ Route::middleware('auth')->group(function () {
 Route::get('/run-migrations', function () {
     try {
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        return "Migrações executadas com sucesso!<br><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+        $output = "Migrações executadas com sucesso!<br><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+        
+        // Verifica se existem usuários; se não, roda o seeder principal
+        if (\App\Models\User::count() === 0) {
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+            $output .= "<br>Seeders executados (usuário admin criado)!<br><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+        }
+
+        return $output;
     } catch (\Exception $e) {
         return "Erro ao executar migrações: " . $e->getMessage();
     }
